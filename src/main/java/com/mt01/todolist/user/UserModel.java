@@ -8,10 +8,12 @@ public class UserModel {
   public String getUsername() {
     return username;
   }
+
   public String getName() {
     return name;
   }
+
   public String getPassword() {
     return password;
-  }  
+  }
 }

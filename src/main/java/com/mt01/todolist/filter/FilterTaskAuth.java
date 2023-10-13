@@ -1,23 +1,36 @@
 package com.mt01.todolist.filter;
 
 import java.io.IOException;
+import java.util.Base64;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class FilterTaskAuth implements Filter {
+public class FilterTaskAuth extends OncePerRequestFilter {
 
   @Override
-  public void doFilter(ServletRequest arg0Request, ServletResponse arg1Response, FilterChain arg2Chain)
-      throws IOException, ServletException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+    
+    var authorization = request.getHeader("Authorization");
+    var authEncoded = authorization.substring("Basic".length()).trim();
+    
+    byte[] authDecded = Base64.getDecoder().decode(authEncoded);
 
-    arg2Chain.doFilter(arg0Request, arg1Response);
+    var authString = new String(authDecded);
+    String[] credentials = authString.split(":");
+    
+    String username = credentials[0];
+    String passwrd = credentials[1];
+
+    filterChain.doFilter(request, response);
   }
 
 }
